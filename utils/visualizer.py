@@ -5,7 +5,6 @@ from dash.dependencies import Input, Output, State
 import dash_daq as daq
 import plotly.express as px
 
-
 class Visualizer:
     def __init__(self, config):
         self.config = config
@@ -27,7 +26,7 @@ class Visualizer:
             html.H1('Space-Air-Ground Intelligent Network (SAGIN) Visualization', style={'textAlign': 'center'}),
             html.Div([
                 html.Div([
-                    dcc.Graph(id='environment-graph'),
+                    dcc.Graph(id='environment-graph', style={'height': '60vh'}),
                     html.Div([
                         html.Label('Episode:'),
                         dcc.Slider(
@@ -44,17 +43,18 @@ class Visualizer:
                             min=0,
                             max=self.config.max_time_steps - 1,
                             value=0,
-                            marks={i: str(i) for i in range(0, self.config.max_time_steps, 20)},
+                            marks={i: str(i) for i in range(0, self.config.max_time_steps, 50)},
                             step=1
                         )
                     ]),
                     html.Div(id='episode-info')
-                ], style={'width': '60%', 'display': 'inline-block', 'padding': '0 20'}),
+                ], style={'width': '60%', 'display': 'inline-block', 'vertical-align': 'top'}),
                 html.Div([
-                    dcc.Graph(id='performance-graph'),
-                    dcc.Graph(id='energy-graph'),
-                    dcc.Graph(id='collision-graph')
-                ], style={'width': '40%', 'display': 'inline-block', 'vertical-align': 'top', 'padding': '0 20'})
+                    dcc.Graph(id='reward-graph', style={'height': '30vh'}),
+                    dcc.Graph(id='coverage-graph', style={'height': '30vh'}),
+                    dcc.Graph(id='energy-graph', style={'height': '30vh'}),
+                    dcc.Graph(id='collision-graph', style={'height': '30vh'})
+                ], style={'width': '40%', 'display': 'inline-block', 'vertical-align': 'top'})
             ]),
             dcc.Interval(
                 id='interval-component',
@@ -76,13 +76,15 @@ class Visualizer:
             return fig, info
 
         @self.app.callback(
-            [Output('performance-graph', 'figure'),
+            [Output('reward-graph', 'figure'),
+             Output('coverage-graph', 'figure'),
              Output('energy-graph', 'figure'),
              Output('collision-graph', 'figure')],
             [Input('interval-component', 'n_intervals')]
         )
         def update_performance_graphs(n):
-            return (self.create_performance_figure(),
+            return (self.create_reward_figure(),
+                    self.create_coverage_figure(),
                     self.create_energy_figure(),
                     self.create_collision_figure())
 
@@ -145,7 +147,6 @@ class Visualizer:
             title=f'SAGIN Environment - Episode {episode}, Time Step {time_step}',
             xaxis_title='X coordinate',
             yaxis_title='Y coordinate',
-            height=700,
             legend=dict(
                 yanchor="top",
                 y=0.99,
@@ -170,7 +171,7 @@ class Visualizer:
             html.P(f'Collisions: {data["collision_count"]}')
         ])
 
-    def create_performance_figure(self):
+    def create_reward_figure(self):
         fig = go.Figure()
 
         fig.add_trace(go.Scatter(
@@ -180,6 +181,18 @@ class Visualizer:
             name='Reward'
         ))
 
+        fig.update_layout(
+            title='Reward Over Time',
+            xaxis_title='Episode',
+            yaxis_title='Reward',
+            legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1)
+        )
+
+        return fig
+
+    def create_coverage_figure(self):
+        fig = go.Figure()
+
         fig.add_trace(go.Scatter(
             x=self.performance_data['episodes'],
             y=self.performance_data['coverages'],
@@ -188,10 +201,9 @@ class Visualizer:
         ))
 
         fig.update_layout(
-            title='Training Performance',
+            title='Coverage Over Time',
             xaxis_title='Episode',
-            yaxis_title='Value',
-            height=300,
+            yaxis_title='Coverage (%)',
             legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1)
         )
 
@@ -211,7 +223,6 @@ class Visualizer:
             title='UAV Energy Over Time',
             xaxis_title='Episode',
             yaxis_title='Energy',
-            height=300,
             legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1)
         )
 
@@ -231,7 +242,6 @@ class Visualizer:
             title='Collision Count Over Time',
             xaxis_title='Episode',
             yaxis_title='Number of Collisions',
-            height=300,
             legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1)
         )
 

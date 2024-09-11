@@ -7,19 +7,19 @@ class Config:
         self.seed = 42
 
         # Environment settings
-        self.area_size = 50  # 减小区域大小
+        self.area_size = 100  # 减小区域大小
         self.num_satellites = 1  # 减少卫星数量
-        self.num_uavs = 2  # 减少UAV数量
-        self.num_ground_stations = 2  # 减少地面站数量
-        self.num_pois = 10  # 减少兴趣点数量
+        self.num_uavs = 7  # 减少UAV数量
+        self.num_ground_stations = 5  # 减少地面站数量
+        self.num_pois = 12  # 减少兴趣点数量
         self.num_obstacles = 5  # 减少障碍物数量
-        self.num_charging_stations = 1
+        self.num_charging_stations = 5
 
         # Agent ranges
-        self.satellite_range = 20
+        self.satellite_range = 15
         self.uav_range = 10
-        self.ground_station_range = 8
-        self.charging_station_range = 5
+        self.ground_station_range = 10
+        self.charging_station_range = 30
 
         # Movement speeds
         self.satellite_speed = 0.5
@@ -27,17 +27,17 @@ class Config:
         self.ground_station_speed = 0.2
 
         # UAV energy settings
-        self.uav_energy_capacity = 50
-        self.uav_energy_consumption_rate = 0.5
-        self.base_energy_consumption = 0.2
-        self.movement_energy_consumption = 0.05
-        self.charging_rate = 1
+        self.uav_energy_capacity = 100
+        self.uav_energy_consumption_rate = 0.01
+        self.base_energy_consumption = 0.1
+        self.movement_energy_consumption = 0.01
+        self.charging_rate = 10
 
         # Obstacle settings
         self.obstacle_size = 1
 
         # Simulation settings
-        self.max_time_steps = 500  # 减少每个episode的最大步数
+        self.max_time_steps = 100  # 减少每个episode的最大步数
 
         # Agent settings
         self.num_agents = self.num_satellites + self.num_uavs + self.num_ground_stations
@@ -52,7 +52,7 @@ class Config:
         self.tau = 0.01
 
         # Training settings
-        self.num_episodes = 50  # 减少训练的episode数量
+        self.num_episodes = 30  # 减少训练的episode数量
         self.batch_size = 64
         self.buffer_size = 10000
         self.log_frequency = 5
@@ -61,11 +61,11 @@ class Config:
         self.save_frequency = 10
 
         # Exploration settings
-        self.exploration_noise = 0.2
+        self.exploration_noise = 0.1
         self.exploration_decay = 0.99
 
         # Advanced features
-        self.communication_range = 15
+        self.communication_range = 20
         self.poi_priority_levels = 2
 
         # Visualization settings
