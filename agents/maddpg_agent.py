@@ -5,15 +5,21 @@ from agents.sag_network import ActorNetwork, CriticNetwork
 
 class MADDPGAgent:
     def __init__(self, obs_dim, action_dim, config, agent_id):
+        self.config = config
         self.obs_dim = obs_dim
         self.action_dim = action_dim
-        self.config = config
         self.agent_id = agent_id
 
-        self.actor = ActorNetwork(obs_dim, action_dim, config.hidden_dim)
-        self.critic = CriticNetwork(obs_dim * config.num_agents, action_dim * config.num_agents, config.hidden_dim)
-        self.target_actor = ActorNetwork(obs_dim, action_dim, config.hidden_dim)
-        self.target_critic = CriticNetwork(obs_dim * config.num_agents, action_dim * config.num_agents, config.hidden_dim)
+        self.agent_id = agent_id
+
+        self.actor = ActorNetwork(config.individual_obs_dim, config.action_dim, config.hidden_dim)
+        self.critic = CriticNetwork(config.individual_obs_dim * config.num_agents,
+                                    config.action_dim * config.num_agents,
+                                    config.hidden_dim)
+        self.target_actor = ActorNetwork(config.individual_obs_dim, config.action_dim, config.hidden_dim)
+        self.target_critic = CriticNetwork(config.individual_obs_dim * config.num_agents,
+                                           config.action_dim * config.num_agents,
+                                           config.hidden_dim)
 
         self.target_actor.load_state_dict(self.actor.state_dict())
         self.target_critic.load_state_dict(self.critic.state_dict())
@@ -21,10 +27,13 @@ class MADDPGAgent:
         self.actor_optimizer = torch.optim.Adam(self.actor.parameters(), lr=config.actor_lr)
         self.critic_optimizer = torch.optim.Adam(self.critic.parameters(), lr=config.critic_lr)
 
-    def act(self, obs, noise_scale=0.0):
+        self.noise = config.exploration_noise
+
+    def act(self, obs, add_noise=True):
         obs = torch.FloatTensor(obs).unsqueeze(0)
         action = self.actor(obs).squeeze().detach().numpy()
-        action += noise_scale * np.random.randn(*action.shape)
+        if add_noise:
+            action += self.noise * np.random.randn(self.config.action_dim)
         return np.clip(action, -1, 1)
 
     def update(self, sample, other_agents):
@@ -78,6 +87,9 @@ class MADDPGAgent:
             target_param.data.copy_(
                 target_param.data * (1.0 - self.config.tau) + param.data * self.config.tau
             )
+    def decay_noise(self):
+        self.noise *= self.config.exploration_decay
+
 
     def save(self, path):
         torch.save({
@@ -90,7 +102,7 @@ class MADDPGAgent:
         }, path)
 
     def load(self, path):
-        checkpoint = torch.load(path)
+        checkpoint = torch.load(path, weights_only=True)
         self.actor.load_state_dict(checkpoint['actor'])
         self.critic.load_state_dict(checkpoint['critic'])
         self.target_actor.load_state_dict(checkpoint['target_actor'])

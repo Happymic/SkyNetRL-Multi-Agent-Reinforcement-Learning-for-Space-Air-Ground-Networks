@@ -14,6 +14,7 @@ class ActorNetwork(nn.Module):
         x = F.relu(self.fc2(x))
         return torch.tanh(self.fc3(x))
 
+
 class CriticNetwork(nn.Module):
     def __init__(self, obs_dim, action_dim, hidden_dim):
         super().__init__()
@@ -27,6 +28,14 @@ class CriticNetwork(nn.Module):
         x = F.relu(self.fc2(x))
         return self.fc3(x)
 
+class CommunicationModule(nn.Module):
+    def __init__(self, hidden_dim):
+        super().__init__()
+        self.fc = nn.Linear(hidden_dim, hidden_dim)
+
+    def forward(self, x, adj):
+        return torch.bmm(adj, self.fc(x))
+
 class SAGNetwork(nn.Module):
     def __init__(self, obs_dim, action_dim, hidden_dim):
         super().__init__()
@@ -35,6 +44,7 @@ class SAGNetwork(nn.Module):
         self.fc3 = nn.Linear(hidden_dim, action_dim)
 
         self.attention = MultiHeadAttention(hidden_dim, 4)  # 4 attention heads
+        self.comm = CommunicationModule(hidden_dim)
 
     def forward(self, obs, adj):
         x = F.relu(self.fc1(obs))
@@ -42,6 +52,9 @@ class SAGNetwork(nn.Module):
 
         # Apply attention mechanism
         x = self.attention(x, adj)
+
+        # Apply communication
+        x = self.comm(x, adj)
 
         return self.fc3(x)
 
