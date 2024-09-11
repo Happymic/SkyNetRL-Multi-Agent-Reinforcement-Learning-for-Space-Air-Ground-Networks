@@ -7,73 +7,73 @@ class Config:
         self.seed = 42
 
         # Environment settings
-        self.area_size = 100  # 减小区域大小
-        self.num_satellites = 1  # 减少卫星数量
-        self.num_uavs = 7  # 减少UAV数量
-        self.num_ground_stations = 5  # 减少地面站数量
-        self.num_pois = 12  # 减少兴趣点数量
-        self.num_obstacles = 5  # 减少障碍物数量
-        self.num_charging_stations = 5
+        self.area_size = 1000  # 减小区域大小
+        self.num_satellites = 5  # 减少卫星数量
+        self.num_uavs = 20  # 减少UAV数量
+        self.num_ground_stations = 10  # 减少地面站数量
+        self.num_pois = 50  # 减少兴趣点数量
+        self.num_obstacles = 30  # 减少障碍物数量
+        self.num_charging_stations = 15
 
         # Agent ranges
-        self.satellite_range = 15
-        self.uav_range = 10
-        self.ground_station_range = 10
-        self.charging_station_range = 30
+        self.satellite_range = 70
+        self.uav_range = 40
+        self.ground_station_range = 30
+        self.charging_station_range = 50
 
         # Movement speeds
-        self.satellite_speed = 0.5
-        self.uav_speed = 1
-        self.ground_station_speed = 0.2
+        self.satellite_speed = 2
+        self.uav_speed = 5
+        self.ground_station_speed = 1
 
         # UAV energy settings
-        self.uav_energy_capacity = 100
-        self.uav_energy_consumption_rate = 0.01
-        self.base_energy_consumption = 0.1
-        self.movement_energy_consumption = 0.01
-        self.charging_rate = 10
+        self.uav_energy_capacity = 1000
+        self.uav_energy_consumption_rate = 0.5
+        self.base_energy_consumption = 0.2
+        self.movement_energy_consumption = 0.3
+        self.charging_rate = 50
 
         # Obstacle settings
-        self.obstacle_size = 1
+        self.obstacle_size = 20
 
         # Simulation settings
-        self.max_time_steps = 100  # 减少每个episode的最大步数
+        self.max_time_steps = 500  # 减少每个episode的最大步数
 
         # Agent settings
         self.num_agents = self.num_satellites + self.num_uavs + self.num_ground_stations
         self.action_dim = 2
         self.individual_obs_dim = 9
-        self.hidden_dim = 64  # 减小隐藏层大小
+        self.hidden_dim = 256  # 减小隐藏层大小
 
         # MADDPG settings
-        self.actor_lr = 0.001
-        self.critic_lr = 0.001
-        self.gamma = 0.95
+        self.actor_lr = 0.0001
+        self.critic_lr = 0.0005
+        self.gamma = 0.99
         self.tau = 0.01
 
         # Training settings
-        self.num_episodes = 30  # 减少训练的episode数量
-        self.batch_size = 64
-        self.buffer_size = 10000
-        self.log_frequency = 5
-        self.eval_frequency = 10
-        self.eval_episodes = 3
-        self.save_frequency = 10
+        self.num_episodes = 20  # 减少训练的episode数量
+        self.batch_size = 1024
+        self.buffer_size = 1000000
+        self.log_frequency = 10
+        self.eval_frequency = 50
+        self.eval_episodes = 5
+        self.save_frequency = 100
 
         # Exploration settings
-        self.exploration_noise = 0.1
-        self.exploration_decay = 0.99
+        self.exploration_noise = 0.3
+        self.exploration_decay = 0.9999
 
         # Advanced features
-        self.communication_range = 20
-        self.poi_priority_levels = 2
+        self.communication_range = 150
+        self.poi_priority_levels = 5
 
         # Visualization settings
-        self.visualize_frequency = 10
+        self.visualize_frequency = 100
         self.real_time_visualization = False
-        self.real_time_frequency = 5
+        self.real_time_frequency = 10
         self.save_animation = True
-        self.animation_fps = 5
+        self.animation_fps = 10
 
         # Create timestamp and directories for this run
         self.timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")

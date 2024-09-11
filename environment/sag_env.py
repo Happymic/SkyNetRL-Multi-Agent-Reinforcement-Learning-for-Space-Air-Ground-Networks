@@ -203,15 +203,20 @@ class SAGEnvironment:
     def _compute_reward(self):
         covered_pois = self._get_covered_pois()
         total_priorities = np.sum(self.poi_priorities)
-        coverage_reward = np.sum(covered_pois * self.poi_priorities) / (total_priorities + 1e-8)
+        coverage_reward = 2 * np.sum(covered_pois * self.poi_priorities) / (total_priorities + 1e-8)
 
         uav_energy = self.agent_energy[self.num_satellites:self.num_satellites + self.num_uavs]
-        energy_penalty = np.sum(self.config.uav_energy_capacity - uav_energy) / (self.num_uavs * self.config.uav_energy_capacity + 1e-8)
+        energy_penalty = 0.05 * np.sum(self.config.uav_energy_capacity - uav_energy) / (self.num_uavs * self.config.uav_energy_capacity + 1e-8)
 
-        collision_penalty = self._get_collision_penalty()
+        collision_penalty = 0.3 * np.log1p(self._get_collision_penalty())
 
-        reward = coverage_reward - 0.1 * energy_penalty - 0.5 * collision_penalty
+        time_factor = 1 + 0.001 * self.time_step
+
+        task_completion_reward = 0.5 * np.sum(covered_pois * (self.poi_priorities == self.config.poi_priority_levels))
+
+        reward = (coverage_reward + task_completion_reward - energy_penalty - collision_penalty) * time_factor
         return np.full(self.num_agents, reward)
+
 
     def _get_collision_penalty(self):
         penalty = 0
