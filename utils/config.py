@@ -16,10 +16,10 @@ class Config:
         self.num_charging_stations = 15
 
         # Agent ranges
-        self.satellite_range = 70
-        self.uav_range = 40
-        self.ground_station_range = 30
-        self.charging_station_range = 50
+        self.satellite_range = 200
+        self.uav_range = 100
+        self.ground_station_range = 50
+        self.charging_station_range = 75
 
         # Movement speeds
         self.satellite_speed = 2
@@ -52,13 +52,13 @@ class Config:
         self.tau = 0.01
 
         # Training settings
-        self.num_episodes = 20  # 减少训练的episode数量
-        self.batch_size = 1024
-        self.buffer_size = 1000000
-        self.log_frequency = 10
-        self.eval_frequency = 50
-        self.eval_episodes = 5
-        self.save_frequency = 100
+        self.num_episodes = 1000  # 增加训练的episode数量，以充分利用6小时训练时间
+        self.batch_size = 1024    # 增加批次大小，充分利用GPU
+        self.buffer_size = 200000 # 略微减小缓冲区大小，以适应32GB RAM
+        self.log_frequency = 10   # 保持不变，每10个episode记录一次
+        self.eval_frequency = 20  # 更频繁地进行评估
+        self.eval_episodes = 5    # 保持不变
+        self.save_frequency = 50
 
         # Exploration settings
         self.exploration_noise = 0.3
