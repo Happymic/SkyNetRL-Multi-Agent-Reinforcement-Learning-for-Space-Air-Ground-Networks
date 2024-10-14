@@ -255,7 +255,7 @@ class SAGEnvironment:
 
     def get_trajectories(self):
         return {
-            'satellites': [pos.copy() for pos in self.agent_trajectories['satellites']],
-            'uavs': [pos.copy() for pos in self.agent_trajectories['uavs']],
-            'ground_stations': [pos.copy() for pos in self.agent_trajectories['ground_stations']]
+            'satellites': [pos.tolist() for pos in self.agent_trajectories['satellites']],
+            'uavs': [pos.tolist() for pos in self.agent_trajectories['uavs']],
+            'ground_stations': [pos.tolist() for pos in self.agent_trajectories['ground_stations']]
         }
