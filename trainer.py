@@ -1,3 +1,6 @@
+import json
+from datetime import datetime
+
 import numpy as np
 from tqdm import tqdm
 import os
@@ -85,6 +88,20 @@ class MADDPGTrainer:
 
         # Start the Dash server after training
         self.visualizer.run()
+
+    def save_episode_data(self, episode, reward, coverage, energy, collisions):
+        data = {
+            "episode": episode,
+            "reward": reward,
+            "coverage": coverage,
+            "energy": energy,
+            "collisions": collisions,
+            "env_data": self.env.get_trajectories(),
+            "timestamp": datetime.now().isoformat()
+        }
+        filename = os.path.join(self.save_dir, f"episode_{episode}.json")
+        with open(filename, 'w') as f:
+            json.dump(data, f)
     def evaluate(self):
         total_reward = 0
         total_coverage = 0

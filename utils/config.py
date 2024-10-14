@@ -8,12 +8,12 @@ class Config:
 
         # Environment settings
         self.area_size = 1000  # 减小区域大小
-        self.num_satellites = 5  # 减少卫星数量
-        self.num_uavs = 20  # 减少UAV数量
-        self.num_ground_stations = 10  # 减少地面站数量
-        self.num_pois = 50  # 减少兴趣点数量
-        self.num_obstacles = 30  # 减少障碍物数量
-        self.num_charging_stations = 15
+        self.num_satellites = 1  # 减少卫星数量
+        self.num_uavs = 5  # 减少UAV数量
+        self.num_ground_stations = 5  # 减少地面站数量
+        self.num_pois = 5  # 减少兴趣点数量
+        self.num_obstacles = 3  # 减少障碍物数量
+        self.num_charging_stations = 5
 
         # Agent ranges
         self.satellite_range = 200
@@ -37,7 +37,7 @@ class Config:
         self.obstacle_size = 20
 
         # Simulation settings
-        self.max_time_steps = 500  # 减少每个episode的最大步数
+        self.max_time_steps = 100  # 减少每个episode的最大步数
 
         # Agent settings
         self.num_agents = self.num_satellites + self.num_uavs + self.num_ground_stations
@@ -52,13 +52,13 @@ class Config:
         self.tau = 0.01
 
         # Training settings
-        self.num_episodes = 1000  # 增加训练的episode数量，以充分利用6小时训练时间
-        self.batch_size = 1024    # 增加批次大小，充分利用GPU
-        self.buffer_size = 200000 # 略微减小缓冲区大小，以适应32GB RAM
-        self.log_frequency = 10   # 保持不变，每10个episode记录一次
-        self.eval_frequency = 20  # 更频繁地进行评估
+        self.num_episodes = 10  # 增加训练的episode数量，以充分利用6小时训练时间
+        self.batch_size = 64    # 增加批次大小，充分利用GPU
+        self.buffer_size = 200 # 略微减小缓冲区大小，以适应32GB RAM
+        self.log_frequency = 5   # 保持不变，每10个episode记录一次
+        self.eval_frequency = 5  # 更频繁地进行评估
         self.eval_episodes = 5    # 保持不变
-        self.save_frequency = 50
+        self.save_frequency = 5
 
         # Exploration settings
         self.exploration_noise = 0.3
