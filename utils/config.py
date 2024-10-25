@@ -57,7 +57,7 @@ class Config:
 
         # Training settings
         self.num_episodes = 100 if mode == 'train' else 5  # Fewer episodes for testing
-        self.batch_size = 16
+        self.batch_size = 8
         self.buffer_size = 100
         self.log_frequency = 5
         self.eval_frequency = 20
