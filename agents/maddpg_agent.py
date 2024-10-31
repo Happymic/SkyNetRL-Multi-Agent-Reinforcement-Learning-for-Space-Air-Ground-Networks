@@ -34,7 +34,7 @@ class MADDPGAgent:
         self.critic_optimizer = torch.optim.Adam(self.critic.parameters(), lr=config.critic_lr)
 
         # Set up gradient scaler for mixed precision training
-        self.scaler = torch.cuda.amp.GradScaler()
+        self.scaler = torch.amp.GradScaler()
 
         self.noise = config.exploration_noise
         self.gradient_steps = 0
