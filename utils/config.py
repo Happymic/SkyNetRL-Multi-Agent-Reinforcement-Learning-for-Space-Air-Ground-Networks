@@ -286,7 +286,7 @@ class Config:
         self.obstacle_size = 25  # 略微增加障碍物大小
 
         # Simulation settings
-        self.max_time_steps = 75  # 增加每个episode的步数
+        self.max_time_steps = 200  # 增加每个episode的步数
 
         # Agent settings
         self.num_agents = self.num_satellites + self.num_uavs + self.num_ground_stations
