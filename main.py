@@ -3,7 +3,7 @@ from trainer import MADDPGTrainer
 import torch
 import numpy as np
 import random
-
+import os
 
 def set_seed(seed):
     torch.manual_seed(seed)
@@ -32,53 +32,35 @@ def get_device():
 
 
 def main():
-    # Get the best available device
-    device = get_device()
-
-    # Create config
     config = Config()
-
-    # Add device to config for use throughout the project
-    config.device = device
-
-    # Set random seed for reproducibility
-    set_seed(config.seed)
-
-    # Optimize CUDA settings for training
-    if device.type == 'cuda':
-        # Enable TF32 precision for better performance on Ampere GPUs
-        torch.backends.cuda.matmul.allow_tf32 = True
-        torch.backends.cudnn.allow_tf32 = True
-
-        # Set optimal memory allocation strategy
-        torch.cuda.empty_cache()
-        torch.backends.cudnn.benchmark = True
-
-        # Print CUDA memory status before training
-        print(f"Initial CUDA memory allocated: {torch.cuda.memory_allocated(device) / 1024 ** 2:.2f} MB")
-        print(f"Initial CUDA memory cached: {torch.cuda.memory_reserved(device) / 1024 ** 2:.2f} MB\n")
-
-    # Create trainer with device configuration
     trainer = MADDPGTrainer(config)
 
-    # Train model
-    print("Starting training...")
-    trainer.train()
+    try:
+        print("Starting training...")
+        trainer.train()
 
-    # Evaluate the final model
-    print("\nEvaluating best model...")
-    trainer.load_models('best')
-    eval_reward, eval_coverage = trainer.evaluate()
-    print(f"Best Model Evaluation - Avg Reward: {eval_reward:.2f}, Avg Coverage: {eval_coverage:.2f}")
+        # 训练结束后生成完整报告
+        final_summary = trainer.metrics.get_summary()
+        print("\n=== Final Training Results ===")
+        for category in final_summary:
+            print(f"\n{category}:")
+            for metric, values in final_summary[category].items():
+                print(f"  {metric}:")
+                print(f"    Final Value: {values['current']:.3f}")
+                print(f"    Mean: {values['mean']:.3f} ± {values['std']:.3f}")
+                print(f"    Best: {values['max']:.3f}")
 
-    # If using GPU, print final memory status
-    if device.type == 'cuda':
-        print(f"\nFinal CUDA memory allocated: {torch.cuda.memory_allocated(device) / 1024 ** 2:.2f} MB")
-        print(f"Final CUDA memory cached: {torch.cuda.memory_reserved(device) / 1024 ** 2:.2f} MB")
+        # 生成最终的可视化报告
+        trainer.metrics.plot_metrics(
+            save_path=os.path.join(config.base_dir, "final_training_metrics.html")
+        )
 
-    # Visualize the best model
-    print("\nStarting visualization...")
-    trainer.visualizer.visualize(trainer.env, trainer.agents, 'best')
+        print("\nTraining completed successfully!")
+        print(f"Metrics and visualizations saved to: {config.base_dir}")
+
+    except Exception as e:
+        print(f"Training failed with error: {str(e)}")
+        raise e
 
 
 if __name__ == "__main__":

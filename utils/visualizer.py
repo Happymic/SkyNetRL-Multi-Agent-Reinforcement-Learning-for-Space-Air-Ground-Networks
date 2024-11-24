@@ -5,7 +5,7 @@ import numpy as np
 import plotly.graph_objs as go
 from dash import Dash, dcc, html
 from dash.dependencies import Input, Output, State
-import dash_daq as daq
+
 import plotly.express as px
 
 class Visualizer:
