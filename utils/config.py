@@ -301,18 +301,18 @@ class Config:
         self.tau = 0.005  # 降低软更新率以提高稳定性
 
         # Training settings - Balanced for efficiency
-        self.num_episodes = 300 if mode == 'train' else 5  # 增加训练轮数
+        self.num_episodes = 20 if mode == 'train' else 5  # 增加训练轮数
         self.batch_size = 32  # 增加批次大小
         self.buffer_size = 10000  # 增加缓冲区大小
         self.log_frequency = 5
-        self.eval_frequency = 20
-        self.eval_episodes = 3
-        self.save_frequency = 20  # 增加保存频率
+        self.eval_frequency = 5
+        self.eval_episodes = 5
+        self.save_frequency = 1  # 增加保存频率
 
         # Memory management settings - Enhanced
         self.memory_cleanup_freq = 10  # 增加清理频率
         self.gradient_accumulation_steps = 4
-        self.empty_cache_freq = 15  # 增加清理频率
+        self.empty_cache_freq = 5  # 增加清理频率
 
         # Exploration settings - More exploration
         self.exploration_noise = 0.15  # 增加探索噪声
