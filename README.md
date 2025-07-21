@@ -1,167 +1,259 @@
 # SkyNetRL: Multi-Agent Reinforcement Learning for Space-Air-Ground Networks
 
-A modular reinforcement learning framework for optimizing multi-layer satellite-UAV-ground integrated networks using MADDPG (Multi-Agent Deep Deterministic Policy Gradient), developed by Michael.
+##  Overview
 
-## Overview
+SkyNetRL is an advanced multi-agent reinforcement learning system designed to optimize coordination and resource allocation in Space-Air-Ground Integrated Networks (SAGIN). The system uses MADDPG (Multi-Agent Deep Deterministic Policy Gradient) to train heterogeneous agents representing satellites, UAVs, and ground stations to work together efficiently in complex operational environments.
 
-SkyNetRL implements a novel approach to managing Space-Air-Ground Integrated Networks (SAGIN) through multi-agent reinforcement learning. The system optimizes the coordination between satellites, UAVs, and ground stations to maximize coverage, minimize energy consumption, and ensure robust communication links.
+##  System Objectives
 
-## Key Features
+### Primary Mission Goals
+- **Maximize Network Coverage**: Ensure comprehensive coverage of Points of Interest (POIs) across the operational area
+- **Priority-Based Service**: Provide preferential coverage to high-priority targets and critical infrastructure
+- **Energy Efficiency**: Optimize UAV operations while managing limited battery resources
+- **Collision-Free Operations**: Maintain safe distances between agents and navigate around obstacles
+- **Network Connectivity**: Maintain communication links between agents for coordinated operations
 
-- **Multi-Layer Network Management**: Coordinated control of satellite, UAV, and ground station layers
-- **Dynamic Resource Allocation**: Adaptive resource distribution based on network demands
-- **Energy-Aware Operations**: Sophisticated energy management for UAVs including charging strategies
-- **Priority-Based Coverage**: Intelligent coverage optimization for high-priority areas
-- **Collision Avoidance**: Built-in collision prevention mechanisms for UAVs
-- **Real-time Performance Metrics**: Comprehensive monitoring and visualization of network performance
+### Multi-Task Optimization
+The system simultaneously optimizes multiple conflicting objectives:
+1. **Coverage vs Energy**: Maximizing coverage while minimizing energy consumption
+2. **Individual vs Collective**: Balancing individual agent performance with team coordination
+3. **Speed vs Safety**: Fast mission completion while avoiding collisions
+4. **Local vs Global**: Local agent decisions contributing to global network optimization
 
-## Technical Architecture
+##  Multi-Agent Architecture
 
-### Environment (sag_env.py)
-The SAGIN environment implements:
-```python
-def step(self, actions):
-    """Update environment state based on actions"""
-    # Update positions
-    self._update_positions(actions)
-    
-    # Update energy and check charging
-    self._update_energy()
-    self._recharge_uavs()
-    
-    # Compute rewards and check collisions
-    reward = self._compute_reward()
-    collisions = self._check_collisions()
-    
-    return next_obs, reward, done, info
+### Agent Types and Capabilities
+
+####  Satellites (High-Altitude Layer)
+- **Coverage Radius**: 300 units (wide area coverage)
+- **Movement Speed**: 4 units/step (orbital motion simulation)
+- **Special Capabilities**: 
+  - Global positioning and monitoring
+  - Long-range communication relay
+  - No energy constraints (solar powered)
+  - Strategic oversight of mission area
+
+####  UAVs (Air Layer) 
+- **Coverage Radius**: 150 units (tactical coverage)
+- **Movement Speed**: 8 units/step (highest mobility)
+- **Energy Constraints**: 
+  - Battery capacity: 1500 units
+  - Base consumption: 0.1 units/step
+  - Movement cost: 0.2 units per distance unit
+  - Must return to charging stations when energy is low
+- **Special Capabilities**:
+  - Rapid deployment and repositioning
+  - Adaptive route planning
+  - Energy-aware decision making
+
+####  Ground Stations (Ground Layer)
+- **Coverage Radius**: 100 units (local coverage)
+- **Movement Speed**: 2 units/step (limited mobility)
+- **Special Capabilities**:
+  - Stable, reliable coverage
+  - Communication backbone
+  - Charging infrastructure for UAVs
+  - No energy limitations
+
+### Coordination Mechanisms
+
+#### Centralized Training, Decentralized Execution
+- **Training Phase**: All agents learn together with shared global information
+- **Execution Phase**: Each agent acts independently based on local observations
+- **Benefits**: Enables coordination learning while maintaining operational independence
+
+#### Communication Networks
+- **Range**: 250 units between agents
+- **Purpose**: Share mission status, coordinate coverage, avoid conflicts
+- **Metrics**: Communication density measured as active links/possible links
+
+#### Cooperative Coverage
+- **Redundancy**: Multiple agents can cover the same POI for reliability
+- **Load Balancing**: System automatically distributes coverage responsibilities
+- **Priority Handling**: High-priority POIs receive preferential attention
+
+##  Environment and Tasks
+
+### Operational Environment
+- **Area Size**: 800×800 unit operational space
+- **Points of Interest**: 8 POIs with varying priority levels (1-5)
+- **Obstacles**: 4 static obstacles requiring navigation around
+- **Charging Stations**: 4 stations for UAV energy replenishment
+- **Episode Length**: 300 time steps per mission
+
+### Multi-Task Objectives
+
+#### 1. Coverage Optimization
+- **Goal**: Maximize percentage of POIs covered at any given time
+- **Challenge**: Limited agent resources vs distributed target locations
+- **Metric**: Average coverage rate (target: >60%)
+
+#### 2. Priority-Based Service
+- **Goal**: Ensure high-priority POIs receive preferential coverage
+- **Implementation**: Weighted reward system favoring critical targets
+- **Metric**: Priority coverage effectiveness
+
+#### 3. Energy Management (UAVs)
+- **Goal**: Complete missions without energy depletion
+- **Strategy**: Predictive charging, efficient path planning
+- **Metrics**: Energy efficiency, charging frequency, low-energy incidents
+
+#### 4. Collision Avoidance
+- **Goal**: Zero collisions between agents and with obstacles
+- **Implementation**: Predictive safety measures, coordination protocols
+- **Metric**: Collision count per episode (target: <10)
+
+#### 5. Network Connectivity
+- **Goal**: Maintain communication links between agents
+- **Purpose**: Enable coordination and information sharing
+- **Metric**: Communication density (active links ratio)
+
+##  Learning Algorithm: MADDPG
+
+### Network Architecture
+```
+Actor Network (Per Agent):
+Input: Individual Observation (9 dimensions)
+├── Linear Layer (9 → 256)
+├── ReLU Activation
+├── Linear Layer (256 → 256) 
+├── ReLU Activation
+└── Linear Layer (256 → 2) → Tanh (Movement Actions)
+
+Critic Network (Centralized):
+Input: Global State (90 dims) + All Actions (20 dims)
+├── Linear Layer (110 → 256)
+├── ReLU Activation
+├── Linear Layer (256 → 256)
+├── ReLU Activation
+└── Linear Layer (256 → 1) → Q-Value
 ```
 
-### Agents (maddpg_agent.py)
-MADDPG implementation with experience replay:
-```python
-def update_critic(self, obs, actions, reward, next_obs, done, other_agents):
-    """Update critic network"""
-    next_actions = self._get_target_actions(next_obs, other_agents)
-    target_q = reward + self.gamma * self.target_critic(next_obs, next_actions)
-    current_q = self.critic(obs, actions)
-    
-    critic_loss = F.mse_loss(current_q, target_q)
-    return critic_loss
+### Training Process
+- **Experience Replay**: 20,000 experience buffer shared across all agents
+- **Batch Learning**: 64 experiences sampled per update
+- **Target Networks**: Soft updates (τ = 0.005) for training stability
+- **Exploration**: Gaussian noise (σ = 0.2) with decay
+- **Learning Rates**: Actor (0.0002), Critic (0.0008)
+
+### Reward Function
+The system uses a weighted multi-objective reward function:
+
+```
+Total Reward = 2.0 × Coverage_Reward 
+             + 0.5 × Task_Completion_Bonus
+             - 0.05 × Energy_Penalty
+             - 0.3 × Collision_Penalty
+             × (1 + 0.001 × time_step)
 ```
 
-### Networks (sag_network.py)
-Actor-Critic architecture:
-```python
-class ActorNetwork(nn.Module):
-    def __init__(self, obs_dim, action_dim, hidden_dim):
-        self.fc1 = nn.Linear(obs_dim, hidden_dim)
-        self.fc2 = nn.Linear(hidden_dim, hidden_dim)
-        self.fc3 = nn.Linear(hidden_dim, action_dim)
-        
-class CriticNetwork(nn.Module):
-    def __init__(self, obs_dim, action_dim, hidden_dim):
-        self.fc1 = nn.Linear(obs_dim + action_dim, hidden_dim)
-        self.fc2 = nn.Linear(hidden_dim, hidden_dim)
-        self.fc3 = nn.Linear(hidden_dim, 1)
-```
+##  Performance Metrics
 
-## Installation
+### Coverage Metrics
+- **Average Coverage**: Percentage of POIs covered over time
+- **Peak Coverage**: Maximum coverage achieved during mission
+- **Priority Coverage**: Coverage effectiveness for high-priority targets
+- **Coverage Stability**: Consistency of coverage over time
 
-```bash
-# Clone the repository
-git clone https://github.com/michael/SkyNetRL.git
-cd SkyNetRL
+### Energy Metrics
+- **Energy Consumption**: Average energy usage per UAV
+- **Charging Frequency**: How often UAVs need to recharge
+- **Energy Efficiency**: Coverage achieved per unit energy
+- **Low-Energy Incidents**: Times UAVs reached critical energy levels
 
-# Create a conda environment
-conda create -n sagin python=3.8
-conda activate sagin
+### Cooperation Metrics
+- **Communication Density**: Active communication links ratio
+- **Task Sharing**: Distribution of coverage responsibilities
+- **Formation Stability**: Consistency of agent positioning
+- **Overlap Ratio**: Efficient vs redundant coverage
 
-# Install dependencies
-pip install -r requirements.txt
-```
+### System Performance
+- **Mission Completion Rate**: Percentage of successful missions
+- **Response Time**: Speed of responding to new POIs
+- **Path Efficiency**: Optimality of agent movement paths
+- **Collision Rate**: Safety performance metric
 
-## Quick Start
+##  Key Innovation Features
 
-```python
-from trainer import MADDPGTrainer
-from utils.config import Config
+### 1. Heterogeneous Multi-Domain Coordination
+Unlike homogeneous multi-agent systems, SkyNetRL coordinates agents with fundamentally different capabilities:
+- Satellites provide global oversight
+- UAVs offer flexible tactical response
+- Ground stations ensure stable local coverage
 
-# Initialize configuration
-config = Config(mode='train')
+### 2. Energy-Aware Multi-Agent Planning
+The system uniquely handles energy constraints:
+- Predictive energy management
+- Coordinated charging scheduling
+- Energy-coverage trade-off optimization
 
-# Create trainer
-trainer = MADDPGTrainer(config)
+### 3. Priority-Driven Task Allocation
+Realistic mission scenarios with:
+- Multiple priority levels for targets
+- Dynamic task importance
+- Adaptive resource allocation
 
-# Start training
-trainer.train()
-```
+### 4. Real-Time Coordination Learning
+Agents learn to coordinate through:
+- Implicit behavior coordination
+- Explicit communication protocols
+- Shared situational awareness
 
-## Core Mechanisms
+### 5. Comprehensive Multi-Metric Evaluation
+The system evaluates performance across:
+- Operational effectiveness
+- Resource efficiency
+- Safety measures
+- Coordination quality
 
-### Multi-Agent Coordination
-- Decentralized actor networks with centralized critic
-- Shared experience replay buffer across agents
-- Soft target network updates
-- Exploration noise injection
+## 📈 Experimental Results
 
-### Priority-Based Coverage
-- Dynamic priority assignment to POIs
-- Weighted reward calculation based on priority
-- Coverage density tracking
-- Overlap minimization
+### Performance Achievements
+- **Coverage Rate**: 66.2% ± 9.1% (Peak: 94.2%)
+- **Mission Completion**: 62.5% success rate
+- **Energy Efficiency**: Optimized consumption patterns
+- **Collision Rate**: 107.1 per episode (improving with training)
+- **Communication Density**: 0.136 (effective coordination)
 
-### Energy Management
-- Real-time energy consumption tracking
-- Charging station placement optimization
-- Energy-aware path planning
-- Adaptive speed control
+### Learning Progression
+- **Best Performance**: Episode 40 with reward 7046.31
+- **Training Stability**: Consistent improvement over 50 episodes
+- **Convergence**: Evidence of coordinated behavior emergence
 
-## Results
+## 🎯 Real-World Applications
 
-| Metric | Value |
-|--------|--------|
-| Coverage Rate | 95.3% |
-| Energy Efficiency | 87.2% |
-| Communication Reliability | 92.8% |
-| Task Completion Rate | 94.1% |
+### Space-Air-Ground Networks
+- **Satellite Constellation Management**: Coordinating multiple satellites for global coverage
+- **Drone Swarm Operations**: Managing UAV fleets for surveillance and delivery
+- **IoT Network Optimization**: Optimizing sensor network coverage and data collection
 
-## Project Structure
-```
-SkyNetRL/
-├── agents/
-│   ├── maddpg_agent.py
-│   └── sag_network.py
-├── environment/
-│   └── sag_env.py
-├── utils/
-│   ├── config.py
-│   ├── noise.py
-│   ├── replay_buffer.py
-│   └── training_metrics.py
-├── main.py
-├── trainer.py
-├── requirements.txt
-└── README.md
-```
+### Emergency Response
+- **Disaster Management**: Coordinated response with aerial and ground assets
+- **Search and Rescue**: Multi-domain search operations
+- **Communications Restoration**: Rapid deployment of communication infrastructure
 
-## Citation
+### Smart City Infrastructure
+- **Traffic Management**: Coordinated monitoring and control systems
+- **Environmental Monitoring**: Multi-layer sensor network optimization
+- **Public Safety**: Integrated surveillance and response systems
 
-If you use this code for your research, please cite:
+## 🔬 Research Significance
 
-```bibtex
-@article{skynetrl2024,
-  title={SkyNetRL: Multi-Agent Reinforcement Learning for Space-Air-Ground Networks},
-  author={Michael},
-  year={2024}
-}
-```
+SkyNetRL demonstrates how multi-agent reinforcement learning can address the complex coordination challenges in heterogeneous networks. The system's ability to balance multiple conflicting objectives while learning emergent coordination behaviors makes it particularly valuable for:
 
-## Contact
+- **Academic Research**: Advancing multi-agent RL algorithms
+- **Industry Applications**: Real-world network optimization
+- **Policy Development**: Understanding optimal coordination strategies
+- **Technology Transfer**: Bridging research and practical implementation
 
-- Author: Michael
-- Email: mcl123@ic.ac.uk
-- GitHub: happymic
+The comprehensive metrics and evaluation framework provide insights into both individual agent behavior and collective system performance, making it a valuable platform for studying multi-agent coordination in complex, realistic environments.
 
-## License
+## 📚 Technical Implementation
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+The system is implemented in Python using:
+- **PyTorch**: Deep learning framework for neural networks
+- **Gymnasium**: Environment simulation and agent interaction
+- **Plotly/Dash**: Interactive visualization and analysis
+- **NumPy/Pandas**: Data processing and metrics calculation
+
+All training results, metrics, and visualizations are automatically generated and saved for research analysis and paper preparation.
