@@ -1,0 +1,146 @@
+{
+  "experiment_name": "comprehensive_research_evaluation",
+  "seed": 42,
+  "device": "auto",
+  "num_episodes": 5000,
+  "num_eval_episodes": 50,
+  "eval_frequency": 100,
+  "save_frequency": 200,
+  "buffer_size": 500000,
+  "batch_size": 128,
+  "learning_starts": 5000,
+  
+  "environment": {
+    "area_size": 1200,
+    "num_agents": 12,
+    "num_satellites": 3,
+    "num_uavs": 6,
+    "num_ground_stations": 3,
+    "num_pois": 20,
+    "num_obstacles": 8,
+    "num_charging_stations": 6,
+    "max_episode_steps": 400,
+    
+    "satellite_coverage_radius": 300,
+    "satellite_max_speed": 4,
+    
+    "uav_coverage_radius": 150,
+    "uav_max_speed": 8,
+    "uav_energy_capacity": 2000,
+    "uav_energy_consumption": 6,
+    
+    "ground_station_coverage_radius": 100,
+    "ground_station_max_speed": 3,
+    
+    "communication_range": 250,
+    
+    "coverage_reward_weight": 3.0,
+    "task_priority_weight": 2.0,
+    "energy_penalty_weight": 0.3,
+    "collision_penalty_weight": 10.0,
+    
+    "randomization": {
+      "agent_position_noise": 100.0,
+      "poi_density_variation": 0.4,
+      "weather_variation": true,
+      "dynamic_obstacles": true,
+      "communication_interference": 0.2,
+      "satellite_orbit_variation": 50.0
+    }
+  },
+  
+  "algorithm": {
+    "embed_dim": 512,
+    "num_heads": 16,
+    "dropout": 0.1,
+    "actor_lr": 0.0001,
+    "critic_lr": 0.0003,
+    "weight_decay": 1e-6,
+    "gamma": 0.995,
+    "tau": 0.001,
+    "clip_grad_norm": 2.0,
+    "exploration_noise": 0.05,
+    "noise_decay": 0.999,
+    "attention_reg_weight": 0.02,
+    "entropy_reg_weight": 0.005
+  },
+  
+  "hierarchical_attention": {
+    "enabled": true,
+    "hidden_dim": 512,
+    "n_spatial_heads": 16,
+    "n_agent_heads": 12,
+    "n_task_heads": 8,
+    "dropout": 0.1,
+    "layer_norm": true,
+    "attention_temperature": 0.1
+  },
+  
+  "stability": {
+    "gradient_clipping_enabled": true,
+    "gradient_clip_value": 2.0,
+    "lr_scheduling_enabled": true,
+    "early_stopping_enabled": true,
+    "early_stopping_patience": 500,
+    "target_network_update_interval": 5
+  },
+  
+  "monitoring": {
+    "enabled": true,
+    "log_interval": 25,
+    "save_plots": true,
+    "create_videos": true,
+    "comprehensive_analysis": true,
+    "real_time_plotting": true
+  },
+  
+  "algorithms": ["ae_maddpg", "baseline_maddpg", "qmix", "independent_ppo"],
+  
+  "ablation": {
+    "test_configurations": [
+      {"use_spatial": true, "use_agent": true, "use_task": true},
+      {"use_spatial": false, "use_agent": true, "use_task": true},
+      {"use_spatial": true, "use_agent": false, "use_task": true},
+      {"use_spatial": true, "use_agent": true, "use_task": false},
+      {"use_spatial": false, "use_agent": false, "use_task": false}
+    ]
+  },
+  
+  "scalability": {
+    "scales": {
+      "small": {
+        "area_size": 600,
+        "num_agents": 8,
+        "num_satellites": 2,
+        "num_uavs": 4,
+        "num_ground_stations": 2,
+        "num_pois": 12
+      },
+      "medium": {
+        "area_size": 1000,
+        "num_agents": 15,
+        "num_satellites": 4,
+        "num_uavs": 8,
+        "num_ground_stations": 3,
+        "num_pois": 25
+      },
+      "large": {
+        "area_size": 1500,
+        "num_agents": 25,
+        "num_satellites": 6,
+        "num_uavs": 12,
+        "num_ground_stations": 7,
+        "num_pois": 40
+      }
+    }
+  },
+  
+  "visualization": {
+    "create_training_plots": true,
+    "create_attention_analysis": true,
+    "create_interactive_dashboard": true,
+    "create_paper_figures": true,
+    "generate_comparison_plots": true,
+    "create_ablation_analysis": true
+  }
+}

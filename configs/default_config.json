@@ -1,0 +1,114 @@
+{
+  "experiment_name": "sagin_coverage_optimization",
+  "seed": 42,
+  "device": "auto",
+  "num_episodes": 1000,
+  "num_eval_episodes": 20,
+  "eval_frequency": 10,
+  "save_frequency": 50,
+  "buffer_size": 100000,
+  "batch_size": 64,
+  "learning_starts": 1000,
+  
+  "environment": {
+    "area_size": 800,
+    "num_agents": 8,
+    "num_satellites": 2,
+    "num_uavs": 4,
+    "num_ground_stations": 2,
+    "num_pois": 12,
+    "num_obstacles": 3,
+    "num_charging_stations": 4,
+    "max_episode_steps": 200,
+    
+    "satellite_coverage_radius": 250,
+    "satellite_max_speed": 3,
+    
+    "uav_coverage_radius": 120,
+    "uav_max_speed": 6,
+    "uav_energy_capacity": 1200,
+    "uav_energy_consumption": 5,
+    
+    "ground_station_coverage_radius": 80,
+    "ground_station_max_speed": 2,
+    
+    "communication_range": 200,
+    
+    "coverage_reward_weight": 2.0,
+    "task_priority_weight": 1.5,
+    "energy_penalty_weight": 0.2,
+    "collision_penalty_weight": 5.0,
+    
+    "randomization": {
+      "agent_position_noise": 50.0,
+      "poi_density_variation": 0.2,
+      "weather_variation": true,
+      "dynamic_obstacles": true,
+      "communication_interference": 0.1
+    }
+  },
+  
+  "algorithm": {
+    "embed_dim": 256,
+    "num_heads": 8,
+    "dropout": 0.1,
+    "actor_lr": 0.0003,
+    "critic_lr": 0.001,
+    "weight_decay": 1e-5,
+    "gamma": 0.99,
+    "tau": 0.005,
+    "clip_grad_norm": 1.0,
+    "exploration_noise": 0.1,
+    "noise_decay": 0.995,
+    "attention_reg_weight": 0.01,
+    "entropy_reg_weight": 0.001
+  },
+  
+  "algorithms": ["ae_maddpg", "baseline_maddpg"],
+  
+  "ablation": {
+    "test_configurations": [
+      {"use_spatial": true, "use_agent": true, "use_task": true},
+      {"use_spatial": false, "use_agent": true, "use_task": true},
+      {"use_spatial": true, "use_agent": false, "use_task": true},
+      {"use_spatial": true, "use_agent": true, "use_task": false},
+      {"use_spatial": false, "use_agent": false, "use_task": false}
+    ]
+  },
+  
+  "scalability": {
+    "scales": {
+      "small": {
+        "area_size": 400,
+        "num_agents": 6,
+        "num_satellites": 1,
+        "num_uavs": 3,
+        "num_ground_stations": 2,
+        "num_pois": 8
+      },
+      "medium": {
+        "area_size": 600,
+        "num_agents": 10,
+        "num_satellites": 2,
+        "num_uavs": 5,
+        "num_ground_stations": 3,
+        "num_pois": 15
+      },
+      "large": {
+        "area_size": 1000,
+        "num_agents": 16,
+        "num_satellites": 3,
+        "num_uavs": 8,
+        "num_ground_stations": 5,
+        "num_pois": 25
+      }
+    }
+  },
+  
+  "visualization": {
+    "create_training_plots": true,
+    "create_attention_analysis": true,
+    "create_interactive_dashboard": true,
+    "create_paper_figures": true
+  }
+}

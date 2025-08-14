@@ -1,4 +1,172 @@
-.vscode
-__pycache__
-runs
-saved_modules
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# C extensions
+*.so
+
+# Distribution / packaging
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+pip-wheel-metadata/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# PyInstaller
+*.manifest
+*.spec
+
+# Installer logs
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+.hypothesis/
+.pytest_cache/
+
+# Environments
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# Machine Learning & AI specific
+# PyTorch models (large files)
+*.pth
+*.pt
+*.pkl
+*.pickle
+
+# TensorBoard logs
+logs/
+tensorboard_logs/
+runs/
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# Training outputs and experiment results
+outputs/
+output/
+training_outputs/
+experiment_logs/
+monitoring_outputs/
+checkpoints/
+saved_models/
+results/
+
+# Generated videos and visualizations
+*.mp4
+*.avi
+*.mov
+*.mkv
+*.gif
+training_videos/
+visualization_outputs/
+plots/
+!examples/*.gif
+!docs/assets/*.gif
+
+# Analysis outputs (development only)
+gif_analysis/
+trajectory_legacy_analysis/
+paper_figures/
+backup_important_results/
+
+# Temporary test outputs
+test_output/
+test_results_direct/
+test_*/
+quick_test*.py
+minimal_*.py
+research_*.py
+analyze_results.py
+view_results.py
+
+# Data files (keep important configs)
+data/
+datasets/
+*.csv
+*.npy
+*.npz
+*.h5
+*.hdf5
+*.pkl
+*.pickle
+
+# Keep important configuration and documentation files
+!configs/
+!configs/*.json
+!configs/*.yaml
+!examples/.gitkeep
+!*.md
+!requirements.txt
+!setup.py
+!LICENSE
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.spyderproject
+.spyproject
+.rope_project_history
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Logs
+*.log
+debug.log
+error.log
+
+# Temporary files
+*.tmp
+*.temp
+.tmp/
+.temp/
+
+# Claude Code
+.claude/
+
+# WandB (if using)
+wandb/
+
+# MLflow (if using)
+mlruns/

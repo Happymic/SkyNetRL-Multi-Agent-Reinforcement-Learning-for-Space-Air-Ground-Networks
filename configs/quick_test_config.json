@@ -1,0 +1,85 @@
+{
+  "experiment_name": "quick_test",
+  "seed": 42,
+  "device": "auto",
+  "num_episodes": 5,
+  "num_eval_episodes": 3,
+  "eval_frequency": 5,
+  "save_frequency": 10,
+  "buffer_size": 1000,
+  "batch_size": 16,
+  "learning_starts": 100,
+  
+  "environment": {
+    "area_size": 400,
+    "num_agents": 4,
+    "num_satellites": 1,
+    "num_uavs": 2,
+    "num_ground_stations": 1,
+    "num_pois": 6,
+    "num_obstacles": 1,
+    "num_charging_stations": 2,
+    "max_episode_steps": 50,
+    
+    "satellite_coverage_radius": 200,
+    "satellite_max_speed": 3,
+    
+    "uav_coverage_radius": 100,
+    "uav_max_speed": 6,
+    "uav_energy_capacity": 600,
+    "uav_energy_consumption": 5,
+    
+    "ground_station_coverage_radius": 80,
+    "ground_station_max_speed": 2,
+    
+    "communication_range": 150,
+    
+    "coverage_reward_weight": 2.0,
+    "task_priority_weight": 1.0,
+    "energy_penalty_weight": 0.1,
+    "collision_penalty_weight": 2.0,
+    
+    "randomization": {
+      "agent_position_noise": 25.0,
+      "poi_density_variation": 0.1,
+      "weather_variation": false,
+      "dynamic_obstacles": false,
+      "communication_interference": 0.05
+    }
+  },
+  
+  "algorithm": {
+    "embed_dim": 128,
+    "num_heads": 4,
+    "dropout": 0.1,
+    "actor_lr": 0.001,
+    "critic_lr": 0.001,
+    "weight_decay": 1e-4,
+    "gamma": 0.95,
+    "tau": 0.01,
+    "clip_grad_norm": 0.5,
+    "exploration_noise": 0.2,
+    "noise_decay": 0.99,
+    "attention_reg_weight": 0.005,
+    "entropy_reg_weight": 0.001
+  },
+  
+  "monitoring": {
+    "log_interval": 2,
+    "save_interval": 10,
+    "plot_interval": 25,
+    "track_gradients": true,
+    "track_attention_weights": true,
+    "track_reward_breakdown": true,
+    "track_network_stats": true,
+    "save_plots": false,
+    "save_raw_data": true
+  },
+  
+  "visualization": {
+    "create_training_plots": false,
+    "create_attention_analysis": false,
+    "create_interactive_dashboard": false,
+    "create_paper_figures": false
+  }
+}
