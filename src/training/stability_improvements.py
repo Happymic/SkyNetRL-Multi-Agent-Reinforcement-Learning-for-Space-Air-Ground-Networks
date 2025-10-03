@@ -506,7 +506,25 @@ class DynamicDropoutScheduler:
 def create_stability_system(config: Dict) -> TrainingStabilizer:
     """Factory function to create training stability system"""
     
-    stability_config = StabilityConfig(**config.get('stability', {}))
+    # Extract stability config and fix key mismatches
+    stability_dict = config.get('stability', {})
+    
+    # Map gradient_clip_value to max_grad_norm
+    if 'gradient_clip_value' in stability_dict:
+        stability_dict['max_grad_norm'] = stability_dict.pop('gradient_clip_value')
+    
+    # Remove any keys that don't exist in StabilityConfig
+    valid_keys = {'gradient_clipping_enabled', 'max_grad_norm', 'gradient_penalty_weight',
+                  'lr_scheduling_enabled', 'scheduler_type', 'lr_decay_factor', 
+                  'lr_patience', 'lr_min', 'prioritized_replay_enabled', 'priority_alpha',
+                  'priority_beta', 'priority_beta_schedule', 'adaptive_noise_enabled',
+                  'noise_scale_min', 'noise_scale_max', 'noise_decay_rate', 
+                  'early_stopping_enabled', 'early_stopping_patience', 'early_stopping_delta',
+                  'performance_window', 'target_update_strategy', 'target_update_frequency'}
+    
+    stability_dict = {k: v for k, v in stability_dict.items() if k in valid_keys}
+    
+    stability_config = StabilityConfig(**stability_dict)
     return TrainingStabilizer(stability_config)
 
 

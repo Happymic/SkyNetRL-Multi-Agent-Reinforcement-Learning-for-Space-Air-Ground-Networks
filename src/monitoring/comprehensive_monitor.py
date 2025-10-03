@@ -797,7 +797,16 @@ class ComprehensiveMonitor:
 def create_comprehensive_monitor(config: Dict, output_manager=None) -> ComprehensiveMonitor:
     """Factory function to create comprehensive monitoring system"""
     
-    monitoring_config = MonitoringConfig(**config.get('monitoring', {}))
+    # Extract monitoring config and remove non-config keys
+    monitor_dict = config.get('monitoring', {})
+    # Remove keys that are not part of MonitoringConfig
+    monitor_dict.pop('enabled', None)
+    monitor_dict.pop('create_videos', None)
+    monitor_dict.pop('comprehensive_analysis', None)
+    monitor_dict.pop('real_time_plotting', None)
+    monitor_dict.pop('save_plots', None)
+    
+    monitoring_config = MonitoringConfig(**monitor_dict)
     monitor = ComprehensiveMonitor(monitoring_config)
     
     # Integrate with output manager if provided

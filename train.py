@@ -348,8 +348,8 @@ def main():
         # Training loop with integrated output management
         print(f"🚀 Starting training for {args.episodes} episodes...")
         
-        # For demonstration, we'll run a simplified training loop with more steps for better visualization
-        for episode in range(1, min(args.episodes, 10) + 1):  # Limited for demo
+        # Full training loop
+        for episode in range(1, args.episodes + 1):
             
             # Reset environment
             obs = env.reset()
@@ -443,9 +443,9 @@ def main():
         sys.exit(1)
     except Exception as e:
         print(f"❌ Training failed: {e}")
-        if args.debug:
-            import traceback
-            traceback.print_exc()
+        import traceback
+        print("\n📍 Error traceback:")
+        traceback.print_exc()
         sys.exit(1)
 
 if __name__ == "__main__":
