@@ -1,0 +1,57 @@
+{
+  "experiment_name": "sagin_multi_algorithm_evaluation",
+  "seed": 42,
+  "num_episodes": 100,
+  "num_eval_episodes": 20,
+  "num_statistical_runs": 5,
+  "enable_visualization": true,
+  "save_visualization": true,
+  "enable_3gpp_channels": false,
+  "enable_mac_protocols": false,
+  "environment": {
+    "area_size": 1000,
+    "max_episode_steps": 100,
+    "num_satellites": 1,
+    "num_uavs": 3,
+    "num_ground_stations": 2,
+    "num_pois": 12,
+    "num_obstacles": 3,
+    "num_charging_stations": 3,
+    "satellite_coverage_radius": 350,
+    "satellite_max_speed": 6,
+    "uav_coverage_radius": 150,
+    "uav_max_speed": 10,
+    "uav_energy_capacity": 1500,
+    "uav_energy_consumption": 4,
+    "ground_station_coverage_radius": 120,
+    "ground_station_max_speed": 3,
+    "communication_range": 300,
+    "coverage_reward_weight": 2,
+    "task_priority_weight": 1.5,
+    "energy_penalty_weight": 0.1,
+    "collision_penalty_weight": 0.5
+  },
+  "channel_model": {
+    "frequency_ghz": 2.4,
+    "bandwidth_mhz": 20,
+    "noise_figure_db": 9,
+    "shadowing_std_db": 4,
+    "multipath_components": 6
+  },
+  "mac_layer": {
+    "num_resource_blocks": 50,
+    "scheduling_algorithm": "proportional_fair",
+    "max_transmit_power": 23
+  },
+  "qos_manager": {
+    "max_flows": 100,
+    "monitoring_window": 2000
+  },
+  "visualization": {
+    "save_trajectories": true,
+    "save_performance_plots": true,
+    "save_network_topology": true,
+    "create_animations": true,
+    "plot_interval": 10
+  }
+}

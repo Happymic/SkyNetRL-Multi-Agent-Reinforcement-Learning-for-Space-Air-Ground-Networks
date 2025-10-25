@@ -362,9 +362,32 @@ class EnhancedSAGINEnvironment(gym.Env):
                 if energy_ratio < 0.2:  # Low energy penalty
                     reward -= self.reward_weights['energy_penalty'] * (0.2 - energy_ratio)
             
+            # Movement efficiency reward (reward for purposeful movement)
+            velocity_magnitude = np.linalg.norm(agent['velocity'])
+            if velocity_magnitude > 0.1:  # Avoid division by zero
+                # Reward for moving towards uncovered POIs
+                closest_uncovered_poi = self._find_closest_uncovered_poi(agent['position'])
+                if closest_uncovered_poi is not None:
+                    direction_to_poi = closest_uncovered_poi - agent['position']
+                    if np.linalg.norm(direction_to_poi) > 0:
+                        direction_to_poi = direction_to_poi / np.linalg.norm(direction_to_poi)
+                        velocity_direction = agent['velocity'] / velocity_magnitude
+                        alignment = np.dot(direction_to_poi, velocity_direction)
+                        reward += 0.1 * alignment  # Small reward for moving towards POIs
+            
             rewards[agent_id] = reward
         
         return rewards
+    
+    def _find_closest_uncovered_poi(self, position: np.ndarray) -> np.ndarray:
+        """Find the closest uncovered POI to the given position"""
+        uncovered_pois = [poi for poi in self.pois if not poi.covered]
+        if not uncovered_pois:
+            return None
+        
+        distances = [np.linalg.norm(position - np.array([poi.x, poi.y])) for poi in uncovered_pois]
+        closest_idx = np.argmin(distances)
+        return np.array([uncovered_pois[closest_idx].x, uncovered_pois[closest_idx].y])
     
     def _compute_coverage_reward(self) -> float:
         """Compute coverage-based reward"""
@@ -693,18 +716,73 @@ class EnhancedSAGINEnvironment(gym.Env):
         
         plt.close(fig)
     
+    def set_channel_model(self, channel_model):
+        """Set 3GPP-compliant channel model"""
+        self.channel_model = channel_model
+        self.enable_3gpp_channels = True
+        
+    def set_mac_layer(self, mac_layer):
+        """Set MAC layer for protocol simulation"""
+        self.mac_layer = mac_layer
+        self.enable_mac_protocols = True
+        
+    def set_qos_manager(self, qos_manager):
+        """Set QoS manager for protocol simulation"""
+        self.qos_manager = qos_manager
+        
+    def get_academic_metrics_data(self):
+        """Get data for academic metrics evaluation"""
+        data = {
+            'coverage_events': [],
+            'throughput_values': [],
+            'latency_values': [],
+            'packet_loss_rates': [],
+            'energy_consumption': [],
+            'spectral_efficiency': [],
+            'fairness_indices': [],
+            'rewards': []
+        }
+        
+        # Extract coverage events
+        for coverage_status in self.coverage_history:
+            coverage_rate = sum(coverage_status.values()) / len(coverage_status)
+            data['coverage_events'].append(coverage_rate > 0.8)  # 80% coverage threshold
+            
+        # Extract energy consumption
+        for energy_status in self.energy_history:
+            if energy_status:
+                avg_energy = np.mean(list(energy_status.values()))
+                data['energy_consumption'].append(avg_energy)
+                
+        # Simulated network metrics (would be real in full implementation)
+        if hasattr(self, 'mac_layer') and self.mac_layer:
+            stats = self.mac_layer.get_statistics()
+            data['throughput_values'] = [stats.get('average_throughput_bps', 0)]
+            data['packet_loss_rates'] = [stats.get('blocking_probability', 0)]
+            
+        if hasattr(self, 'qos_manager') and self.qos_manager:
+            qos_stats = self.qos_manager.get_statistics()
+            data['latency_values'] = [qos_stats['global_metrics'].get('average_delay_ms', 0) / 1000]
+            
+        # Calculate fairness based on agent rewards (simplified)
+        if hasattr(self, 'reward_history') and len(self.reward_history) > 0:
+            agent_total_rewards = {}
+            for rewards in self.reward_history:
+                for agent_id, reward in rewards.items():
+                    if agent_id not in agent_total_rewards:
+                        agent_total_rewards[agent_id] = 0
+                    agent_total_rewards[agent_id] += reward
+                    
+            if len(agent_total_rewards) > 1:
+                reward_values = list(agent_total_rewards.values())
+                mean_reward = np.mean(reward_values)
+                sum_squared = sum((r - mean_reward)**2 for r in reward_values)
+                fairness_index = (mean_reward**2) / (sum_squared / len(reward_values) + 1e-12)
+                data['fairness_indices'] = [fairness_index]
+                
+        return data
+    
     def get_episode_data(self):
         """Get episode data for evaluation"""
-        from ..evaluation.metrics import EpisodeData
-        
-        return EpisodeData(
-            states=[],  # Would need to store states if needed
-            actions=[],  # Would need to store actions if needed
-            rewards=[],  # Would need to store rewards if needed
-            coverage_status=self.coverage_history,
-            energy_levels=self.energy_history,
-            collisions=self.collision_history,
-            agent_positions=self.position_history,
-            poi_priorities=np.array([poi.priority for poi in self.pois]),
-            timestamps=list(range(len(self.coverage_history)))
-        )
+        # Return academic metrics data for compatibility
+        return self.get_academic_metrics_data()

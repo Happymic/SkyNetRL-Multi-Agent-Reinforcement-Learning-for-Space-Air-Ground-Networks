@@ -11,15 +11,15 @@
   "learning_starts": 1000,
   
   "environment": {
-    "area_size": 800,
-    "num_agents": 8,
-    "num_satellites": 2,
-    "num_uavs": 4,
-    "num_ground_stations": 2,
-    "num_pois": 12,
-    "num_obstacles": 3,
-    "num_charging_stations": 4,
-    "max_episode_steps": 200,
+    "area_size": 1200,
+    "num_agents": 15,
+    "num_satellites": 3,
+    "num_uavs": 8,
+    "num_ground_stations": 4,
+    "num_pois": 20,
+    "num_obstacles": 5,
+    "num_charging_stations": 6,
+    "max_episode_steps": 50,
     
     "satellite_coverage_radius": 250,
     "satellite_max_speed": 3,
@@ -49,8 +49,8 @@
   },
   
   "algorithm": {
-    "embed_dim": 256,
-    "num_heads": 8,
+    "embed_dim": 128,
+    "num_heads": 4,
     "dropout": 0.1,
     "actor_lr": 0.0003,
     "critic_lr": 0.001,
@@ -64,7 +64,7 @@
     "entropy_reg_weight": 0.001
   },
   
-  "algorithms": ["ae_maddpg", "baseline_maddpg"],
+  "algorithms": ["baseline_maddpg", "demo_algorithm"],
   
   "ablation": {
     "test_configurations": [

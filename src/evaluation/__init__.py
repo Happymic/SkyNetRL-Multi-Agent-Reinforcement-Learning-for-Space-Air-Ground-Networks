@@ -1,7 +1,17 @@
 """
-Evaluation modules for SAGIN reinforcement learning
+Evaluation Framework for Academic Research
 """
 
-from .metrics import ComprehensiveEvaluator, EpisodeData
+from .academic_metrics import StandardizedMetrics, NetworkPerformanceMetrics, ConvergenceMetrics, ScalabilityMetrics
+from .statistical_analysis import AcademicStatisticalAnalyzer, ComparisonResult, MultipleComparisonResult, DistributionAnalysis
 
-__all__ = ['ComprehensiveEvaluator', 'EpisodeData']
+__all__ = [
+    'StandardizedMetrics',
+    'NetworkPerformanceMetrics',
+    'ConvergenceMetrics',
+    'ScalabilityMetrics',
+    'AcademicStatisticalAnalyzer',
+    'ComparisonResult',
+    'MultipleComparisonResult',
+    'DistributionAnalysis'
+]
